@@ -1,0 +1,157 @@
+[mysqld]
+#-----常规基础配置-----
+# 开启自适应哈希索引，默认打开
+#innodb_adaptive_hash_index=ON
+# 数据文件段自动增长，默认12M，默认名ibdata1
+#innodb_data_file_path=ibdata1:12M:autoextend
+# 开启双写机制，主库开启，备库关闭
+#innodb_doublewrite=ON
+# 独立表空间，默认打开
+#innodb_file_per_table = 1
+# 刷新接临页，该参数官方一直不稳定，有时候0关闭，有时候1打开，5.7版本为1，8.0.3版本之后为0，建议谨慎使用
+#innodb_flush_neighbors=1
+# LRU list的midpoint位置，默认37，如果缓冲池的数据经常需要刷新，可以适当提高默认值，如果数据不是经常刷新，可使用默认值，请通过状态参数调优
+#innodb_old_blocks_pct=37
+# LRU list如果有大量数据插入时，会将新页插入到new list中，将new list中的页移动到old list，将old list中的页移出LRU list
+# 这里有个问题，如果有类似全表扫描这样大量新页进入new list时，old list中的页有些可能是热点数据的页就会被移出LRU list
+# 为了解决这个问题，设置了innodb_old_blocks_time，该参数默认为1000，该参数为毫秒单位，如果设置为10000表示进入old list的页中，需要在old list停留超过10秒才能被刷出old list。这样就保证了热点数据页在大量新页进入时，热点页也不容易被移出LRU list
+#innodb_old_blocks_time=1000
+# 数据页大小，默认16K
+#innodb_page_size=16K
+# 定义从历史列表中清除一批中的解析和进程的撤销日志页数????默认300，不用调整
+#innodb_purge_batch_size=300
+# 5.5.4之前，由Purge Thread进程完成undo页回收，5.5.4之后，由当事务提交结束后，就会触发Purge Thread进程完成undo页回收，8.0版本开始默认4，最小1，最大32.
+innodb_purge_threads=4
+# 读进程数，默认4，建议改成8以上
+innodb_read_io_threads=8
+# 开启异步IO,默认打开
+#innodb_use_native_aio=on
+# 写进程数，默认4，建议改成8以上
+innodb_write_io_threads=8
+# 默认套接字文件存储位置
+socket=/var/run/mysqld/mysqld.sock
+# 默认pid文件存储位置
+pid_file=/var/run/mysqld/mysqld.pid
+#-----关闭恢复配置-----
+# 0表示在innodb关闭的时候，需要purge all, merge insert buffer,flush dirty pages。这种方式关闭最慢，但启动最快，一般用于数据库升级时使用
+# 1表示在innodb关闭的时候，它不需要purge all，merge insert buffer，只需要flush dirty page，默认值
+# 2表示在innodb关闭的时候，它不需要purge all，merge insert buffer，也不进行flush dirty page，只将log buffer里面的日志flush到log files。因此在下次开启时，数据库会进行恢复操作。这种方式关闭最快，但启动最慢
+innodb_fast_shutdown=1
+# innodb会根据Innodb_force_recovery参数决定在开启数据库时会做哪些操作，默认为0，表示当需要恢复时执行所有的恢复操作。
+# 当不能进行效的恢复操作时，mysql有可能无法启动，并记录下错误日志。
+# innodb_force_recovery可以设置为1-6,大的数字包含前面所有数字的影响。
+# 当设置参数值大于0后，可以对表进行select,create,drop操作,但insert,update或者delete这类操作是不允许的。
+# 1(SRV_FORCE_IGNORE_CORRUPT):忽略检查到的corrupt页。
+# 2(SRV_FORCE_NO_BACKGROUND):阻止主线程的运行，如主线程需要执行full purge操作，会导致crash。
+# 3(SRV_FORCE_NO_TRX_UNDO):不执行事务回滚操作。
+# 4(SRV_FORCE_NO_IBUF_MERGE):不执行插入缓冲的合并操作。
+# 5(SRV_FORCE_NO_UNDO_LOG_SCAN):不查看重做日志，InnoDB存储引擎会将未提交的事务视为已提交。
+# 6(SRV_FORCE_NO_LOG_REDO):不执行前滚的操作。
+innodb_force_recovery=0
+# 默认1024
+#innodb_lru_scan_depth=1024
+#-----IO配置-----
+# 5.7.8开始引入的参数，默认打开，官方暂时没有太多对这个参数的介绍，建议默认值即可
+#innodb_flush_sync=ON
+# 合并插入缓冲时，合并插入缓冲的数量为innodb_io_capacity数值的5%，缓冲区刷新到磁盘时，刷新脏页数量为innodb_io_capacity，默认200，如果是高端ssd，最大建议设置到1000
+# 如果设置了innodb_flush_sync，默认设置，该参数将被忽略
+#innodb_io_capacity=200
+# innodb_io_capacity允许设置的最大值，不用修改
+#innodb_io_capacity_max=2000
+# 该值影响每秒刷新脏页的操作，开启此配置后，刷新脏页会通过判断产生重做日志的速度来判断最合适的刷新脏页的数量；而不会再根据innodb_io_capacity了
+#innodb_adaptive_flushing=ON
+#-----缓冲池配置-----
+# 缓冲池大小，官方建议设置为物理内存的80%，默认128M
+innodb_buffer_pool_size=128M
+# 缓冲池数量，该参数有助于降低io争用，但实际测试结果并不稳定，使用方式有待研究，建议默认1，可进行基准测试对改参数进行调整
+innodb_buffer_pool_instances=1
+# 设置缓冲池刷新的时机，当缓冲池中的脏页达到整个缓冲池这个比例的时候，会触发写进程将脏页写回数据文件，默认从原来的90%改为75%，设置过小，会增大IO压力，但减少了恢复数据库的时间，设置过大，会减少IO压力，但会增加恢复数据库的时间
+#innodb_max_dirty_pages_pct=75
+#-----change buffer（变化缓冲）配置 -----
+# 从5.5开始，Insert buffer(插入缓冲)更名为change buffer(变化缓冲)，该参数表示变化缓冲能使用的缓冲池的最大比例，默认25%，最大50%，一般不用修改
+#innodb_change_buffer_max_size=25
+# 使用变化缓冲的语句类型，可使用变化缓冲的语句类型有inserts，deletes，changes，purges，默认all表示所有类型都使用
+#innodb_change_buffering=all
+#-----复制配置----
+# 序列增长起始值，默认1，主主复制时，每个主库依次递增设置。
+auto_increment_offset=1
+# 序列自增值，默认1，主主复制时改为主库数。
+auto_increment_increment=1
+# 开启二进制文件，默认开启，在mysqld通过使用--initializeor --initialize-insecure选项进行手动初始化数据目录时默认关闭，建议显示打开
+log-bin=mysql-bin
+# 二进制文件格式版本兼容，5.6.6之前使用的v1，之后改了，默认OFF，不能兼容v1
+#log_bin_use_v1_row_events=OFF
+# 从库是否将从主库读取到的中继日志写入自己的binlog中，8.0.2之前为OFF，8.0.3之后为ON，如果需要使用多级从库时，应该打开
+log-slave-updates=on
+# 如果想使用复制功能，必须配置server-id各不相同，默认server-id=1
+server-id=1
+#-----错误日志配置-----
+# 如果不配置，默认会输出到控制台或者数据文件目录中，如果文件很大会很不方便，官方docker建议设置到/var/log/mysql下统一管理
+log_error=/var/log/mysql/error.log
+#-----binlog（二进制日志）配置-----
+# 二进制日志默认格式，row行模式，statement语句模式，mixed混合模式
+binlog_format=mixed
+# binlog日志删除时间，超过这个时间，会删除，默认0，不删除，一般可设置为7
+expire_logs_days=7
+# 日志缓冲区大小，默认16M够用了
+#innodb_log_buffer_size=16M
+# 二进制日志默认大小1G，超过后自动创建新的二进制日志文件
+#max_binlog_size=1G
+#-----全局日志配置-----
+# 是否开启全局日志，默认关闭，全局日志会记录数据库执行过的所有语句和命令，用于判断复杂情况，对性能有严重影响
+#general_log=on
+# 全局日志的存储位置，默认数据文件目录下，文件名(主机名.log)，建议改成/var/log/mysql
+#general_log_file=/var/log/mysql/general.log
+#-----慢查询日志配置-----
+# 是否开启慢查询日志，默认关闭，建议打开
+#slow_query_log=on
+# 慢查询记录时间，默认10秒纪录，少于10秒不会被记录到慢查询日志中
+#long_query_time=10.000000
+# 是否将不使用索引的查询记录到慢查询日志中，默认关闭，如果慢查询日志生成比较多，建议打开该参数，调整索引使用不好的语句
+#log_queries_not_using_indexes=on
+# 限制每分钟可以写入慢查询日志的查询数，默认值为0表示无限制，建议改成10-20即可
+#log_throttle_queries_not_using_indexes=20
+# 慢查询日志的输出位置，默认file，表示以文件形式输出，默认输出到数据文件目录中，如果需要分析，可以改为table或none，none=file+table，table时要注意维护表
+#log_output=file
+#-----事务配置-----
+# 是否自动提交，默认1，自动，如果使用0，需要显示的使用commit进行提交，否则语句都不会提交。生产一般不修改这个参数，而是使用start transaction或begin来显示控制。
+#autocommit=1
+# 默认on
+#innodb_support_xa=on
+#-----字符集配置-----
+# 从客户端到达的语句的字符集。当客户端连接到服务器时，使用客户端请求的字符集设置此变量的会话值，不用设置，默认使用character_set_server
+#character_set_client=utf8
+# 用于没有字符集导引器和字符串转换的文字的字符集，不用设置，默认使用character_set_server
+#character_set_connection=utf8
+# 默认数据库使用的字符集，8.0.1版本<latin1，8.0.1版本>=utf8mb4，便于各个版本兼容，未来该参数可能被舍弃，不用设置，默认使用character_set_server
+#character_set_database=utf8
+# 我认为该参数会影响默认表创建的字符集类型，因为mysql没有表字符集的参数设置，不用设置，默认使用character_set_server
+#character_set_database=utf8
+# 文件系统字符集，这个值任何版本都是binary，使用默认值，不用修改
+#character_set_filesystem=binary
+# 用于将查询结果（如结果集或错误消息）返回给客户端的字符集，不用设置，默认使用character_set_server
+#character_set_results=utf8
+# 服务器的默认字符集，8.0.1版本<latin1，8.0.1版本>=utf8mb4，建议改成utf8，便于各个版本兼容
+character_set_server=utf8
+# 服务器用于存储标识符的字符集,这个值任何版本都是utf8，使用默认值，不用修改
+#character_set_system=utf8
+#-----字符集的排序规则-----
+#连接的排序规则，默认8.0.1版本<latin1_swedish_ci，8.0.1版本>=utf8mb4_0900_ai_ci，建议配置utf8_general_ci
+#collation_connection=utf8_general_ci
+#数据库的排序规则，默认8.0.1版本<latin1_swedish_ci，8.0.1版本>=utf8mb4_0900_ai_ci，建议配置utf8_general_ci
+#collation_database=utf8_general_ci
+#服务器的排序规则，默认8.0.1版本<latin1_swedish_ci，8.0.1版本>=utf8mb4_0900_ai_ci，如果character_set_server=utf8，则排序规则默认为utf8_general_ci
+collation_server=utf8_general_ci
+#-----存储引擎----
+# 默认存储引擎，默认值InnoDB
+#default_storage_engine=InnoDB
+# 默认临时表存储引擎，默认值InnoDB
+#default_tmp_storage_engine=InnoDB
+#-----连接配置----
+# 服务器在响应之前等待连接数据包的秒数。默认值为10秒。可用于减少Lost connection to MySQL server at 'XXX', system error: errno错误。
+#connect_timeout=10
+#-----密码安全配置----
+# 默认认证插件。允许的值是 mysql_native_password（使用MySQL本机密码，这是默认值），sha256_password（使用SHA-256密码）和caching_sha2_password（使用SHA-256密码）。
+#default_authentication_plugin=mysql_native_password
+# 默认值为0，禁用自动密码到期。如果值为正整数N，则表示允许的密码生存期; 密码必须每N天更改。
+#default_password_lifetime=0
