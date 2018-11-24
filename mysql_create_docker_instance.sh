@@ -64,7 +64,7 @@ else
     mysql_docker_user=$mysql_docker_user_set
 fi
 
-read -p '服务描述,默认test:' mysql_description_set
+read -p '服务描述,默认mysql-test:' mysql_description_set
 if [ -z $mysql_description_set ];then
     mysql_description=test
 else
