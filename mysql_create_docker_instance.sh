@@ -8,7 +8,7 @@ else
     mysql_home=$mysql_home_set
 fi
 
-read -p 'mysql版本,默认5.7.18:' mysql_version_set
+read -p 'mysql版本,默认5.7.18,最新5.6.42:' mysql_version_set
 if [ -z $mysql_version_set ];then
     mysql_version=5.7.18
 else
