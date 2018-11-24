@@ -57,6 +57,7 @@ expire_logs_days=7
 #-----事务配置-----
 #autocommit=1
 #innodb_support_xa=on
+#transaction-isolation=
 #-----字符集配置-----
 #character_set_client=utf8
 #character_set_connection=utf8
