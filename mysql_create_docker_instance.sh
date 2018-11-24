@@ -66,7 +66,7 @@ fi
 
 read -p '服务描述,默认mysql-test:' mysql_description_set
 if [ -z $mysql_description_set ];then
-    mysql_description=test
+    mysql_description=mysql-test
 else
     mysql_description=$mysql_description_set
 fi
