@@ -64,16 +64,16 @@ else
     mysql_docker_user=$mysql_docker_user_set
 fi
 
-read -p '服务描述,默认mysql-test:' mysql_description_set
+read -p '服务描述,默认test-mysql:' mysql_description_set
 if [ -z $mysql_description_set ];then
-    mysql_description=mysql-test
+    mysql_description=test-mysql
 else
     mysql_description=$mysql_description_set
 fi
 
-read -p '容器名,默认mysql-version-port-description:' mysql_container_name_set
+read -p '容器名,默认$mysql_description-version-port:' mysql_container_name_set
 if [ -z $mysql_container_name_set ];then
-    mysql_container_name=mysql-$mysql_version-$mysql_port-$mysql_description
+    mysql_container_name=$mysql_description-$mysql_version-$mysql_port
 else
     mysql_container_name=$mysql_container_name_set
 fi
@@ -92,8 +92,9 @@ echo "已修改目录属主"
 docker pull mysql:$mysql_version
 echo "已下载镜像"
 
-docker_hostname=`ip address | grep "global e"| cut -d ' ' -f6 | cut -d '/' -f1 | cut -d '.' -f4`$mysql_port
-echo "已定义容器主机名"
+#docker_hostname=`ip address | grep "global e"| cut -d ' ' -f6 | cut -d '/' -f1 | cut -d '.' -f4`$mysql_port
+echo "已随机定义容器内部的主机名"
 
-docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name -h $docker_hostname mysql:$mysql_version
+#docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name -h $docker_hostname mysql:$mysql_version
+docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
 echo "已映射数据文件，配置文件，日志文件位置，完成时间同步和初始化密码设定，docker deamon启动后尝试重启3次，容器初始化完成！！！"
