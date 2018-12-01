@@ -106,9 +106,7 @@ docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_log
 docker cp $mysql_container_name:/var/log/mysql/ $mysql_logs
 docker cp $mysql_container_name:/var/lib/mysql/ $mysql_data
 docker cp $mysql_container_name:/var/run/mysqld/ $mysql_sock
-echo "
-[mysqld]
-" > my.cnf
+cp my.cnf_init my.cnf
 docker cp my.cnf $mysql_container_name:/etc/mysql/conf.d/
 
 echo "已映射数据文件，配置文件，日志文件位置，完成时间同步和初始化密码设定，docker deamon启动后尝试重启3次，容器初始化完成！！！"
