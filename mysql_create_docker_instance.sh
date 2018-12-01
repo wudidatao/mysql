@@ -36,11 +36,18 @@ else
     mysql_conf=$mysql_conf_set
 fi
 
-read -p '日志文件位置,默认mysql_home/mysql_port/logs:' mysql_logs_set
+read -p '日志文件位置,默认mysql_home/version-mysql_port/logs:' mysql_logs_set
 if [ -z $mysql_logs_set ];then
     mysql_logs=${mysql_home}/${mysql_version}-${mysql_port}/logs
 else
     mysql_logs=$mysql_logs_set
+fi
+
+read -p 'sock文件位置，默认mysql_home/version-mysql_port/sock:' mysql_sock_set
+if [ -z $mysql_sock_set ];then
+    mysql_sock=${mysql_home}/${mysql_version}-${mysql_port}/sock
+else
+    mysql_sock=$mysql_sock_set
 fi
 
 read -p '默认登录用户,默认root:' mysql_user_set
@@ -95,6 +102,5 @@ echo "已下载镜像"
 #docker_hostname=`ip address | grep "global e"| cut -d ' ' -f6 | cut -d '/' -f1 | cut -d '.' -f4`$mysql_port
 echo "已随机定义容器内部的主机名"
 
-#docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name -h $docker_hostname mysql:$mysql_version
-docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
+docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
 echo "已映射数据文件，配置文件，日志文件位置，完成时间同步和初始化密码设定，docker deamon启动后尝试重启3次，容器初始化完成！！！"
