@@ -103,6 +103,9 @@ echo "已下载镜像"
 echo "已随机定义容器内部的主机名"
 
 docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
-docker cp 
+
+
+docker cp $mysql_container_name:/var/lib/mysql/ $mysql_data
+docker cp $mysql_container_name:/var/run/mysqld/ $mysql_sock
 
 echo "已映射数据文件，配置文件，日志文件位置，完成时间同步和初始化密码设定，docker deamon启动后尝试重启3次，容器初始化完成！！！"
