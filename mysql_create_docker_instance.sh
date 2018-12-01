@@ -102,11 +102,14 @@ echo "已下载镜像"
 #docker_hostname=`ip address | grep "global e"| cut -d ' ' -f6 | cut -d '/' -f1 | cut -d '.' -f4`$mysql_port
 echo "已随机定义容器内部的主机名"
 
-docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
-docker cp $mysql_container_name:/var/log/mysql/ $mysql_logs
+#logs和sock还没整明白
+#docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
+docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
 docker cp $mysql_container_name:/var/lib/mysql/ $mysql_data
-docker cp $mysql_container_name:/var/run/mysqld/ $mysql_sock
 cp my.cnf_init my.cnf
 docker cp my.cnf $mysql_container_name:/etc/mysql/conf.d/
+#docker cp $mysql_container_name:/var/log/mysql/ $mysql_logs
+#docker cp $mysql_container_name:/var/run/mysqld/ $mysql_sock
+
 
 echo "已映射数据文件，配置文件，日志文件位置，完成时间同步和初始化密码设定，docker deamon启动后尝试重启3次，容器初始化完成！！！"
