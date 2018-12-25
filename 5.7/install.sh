@@ -1,13 +1,12 @@
 #!/bin/bash
 
 #官方下载yum源并安装
-https://dev.mysql.com/downloads/repo/yum/
-mysql80-community-release-el7-1.noarch.rpm
+wget https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm
 
 #安装yum源
-rpm -Uvh mysql80-community-release-el7-1.noarch.rpm
+rpm -Uvh mysql57-community-release-el7-9.noarch.rpm
 
-#enabled=0改成1，让5.7源可用，默认不可用
+#enabled=0改成1，让5.7源可用
 #keepcache=1，让rpm包可以存储在本地，路径在/var/cache/yum/x86_64/7/mysql57-community/，默认不保存
 #这里只保存一个5.7的源，其他的备份之后去掉
 vi /etc/yum.repos.d/mysql-community.repo
