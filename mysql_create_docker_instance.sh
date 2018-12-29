@@ -85,7 +85,9 @@ else
     mysql_container_name=$mysql_container_name_set
 fi
 
-mkdir -p $mysql_home $mysql_data $mysql_conf $mysql_logs
+mysql_sock=${mysql_home}/${mysql_version}-${mysql_port}/sock
+
+mkdir -p $mysql_home $mysql_data $mysql_conf $mysql_logs $mysql_sock
 echo "已创建部署目录"
 
 groupadd mysql
@@ -93,7 +95,8 @@ useradd mysql -g mysql
 echo "已创建mysql用户"
 
 chown -R mysql:mysql $mysql_conf 
-chown -R systemd-bus-proxy:input $mysql_data $mysql_logs
+#chown -R systemd-bus-proxy:input $mysql_data $mysql_logs $mysql_sock
+chown -R polkitd:input $mysql_data $mysql_logs $mysql_sock
 echo "已修改目录属主"
 
 docker pull mysql:$mysql_version
@@ -102,9 +105,9 @@ echo "已下载镜像"
 #docker_hostname=`ip address | grep "global e"| cut -d ' ' -f6 | cut -d '/' -f1 | cut -d '.' -f4`$mysql_port
 echo "已随机定义容器内部的主机名"
 
-#logs和sock还没整明白
+#logs还没整明白
 #docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_logs:/var/log/mysql -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
-docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_data:/var/lib/mysql/ -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
+docker run -d -p $mysql_port:3306 -v $mysql_conf:/etc/mysql/conf.d -v $mysql_data:/var/lib/mysql/ -v $mysql_sock:/var/run/mysqld -v /etc/localtime:/etc/localtime -e MYSQL_ROOT_PASSWORD=$mysql_pass --restart=yes --restart=on-failure:3 --name $mysql_container_name mysql:$mysql_version
 docker cp $mysql_container_name:/var/lib/mysql/ $mysql_data
 cp my.cnf_init my.cnf
 docker cp my.cnf $mysql_container_name:/etc/mysql/conf.d/
