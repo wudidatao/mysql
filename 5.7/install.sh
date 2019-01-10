@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #官方下载yum源并安装
+yum install wget -y
 wget https://dev.mysql.com/get/mysql57-community-release-el7-9.noarch.rpm
 
 #安装yum源
