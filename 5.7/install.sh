@@ -25,6 +25,7 @@ yum repolist enabled | grep mysql
 mysql57-community/x86_64            MySQL 5.7 Community Server               307
 
 #安装指定版本（客户端）
-yum install mysql-community-client-5.7.23-1.el7.x86_64
+#yum install mysql-community-client-5.7.23-1.el7.x86_64
+
 #安装指定版本（客户端和服务端都装）
-yum install mysql-community-server-5.7.23-1.el7.x86_64
+#yum install mysql-community-server-5.7.23-1.el7.x86_64
