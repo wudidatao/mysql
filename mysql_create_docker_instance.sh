@@ -2,7 +2,6 @@
 #!/bin/bash
 # 创建mysql docker实例
 
-
 mysql_home=/data/mysql
 #5.6.42 5.7.18
 mysql_version=5.6.42
