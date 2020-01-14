@@ -120,6 +120,9 @@ expire_logs_days=7
 #innodb_support_xa=on
 # 默认事务隔离级别REPEATABLE-READ，可选值READ-COMMITTED
 #transaction-isolation=REPEATABLE-READ
+#-----事务日志-----
+# 事务日志默认50M太小，改成1G
+innodb_log_file_size=1G 
 #-----字符集配置-----
 # 从客户端到达的语句的字符集。当客户端连接到服务器时，使用客户端请求的字符集设置此变量的会话值，不用设置，默认使用character_set_server
 #character_set_client=utf8
