@@ -60,6 +60,8 @@ innodb_force_recovery=0
 #innodb_io_capacity_max=2000
 # 该值影响每秒刷新脏页的操作，开启此配置后，刷新脏页会通过判断产生重做日志的速度来判断最合适的刷新脏页的数量；而不会再根据innodb_io_capacity了
 #innodb_adaptive_flushing=ON
+# 关闭接临页刷新，默认开启
+innodb_flush_neighbors=0
 #-----缓冲池配置-----
 # 缓冲池大小，官方建议设置为物理内存的80%，默认128M
 innodb_buffer_pool_size=128M
