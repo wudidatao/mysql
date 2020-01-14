@@ -54,6 +54,8 @@ expire_logs_days=7
 #log_queries_not_using_indexes=on
 #log_throttle_queries_not_using_indexes=20
 #log_output=file
+#-----事务日志-----
+innodb_log_file_size=1G
 #-----事务配置-----
 #autocommit=1
 #innodb_support_xa=on
