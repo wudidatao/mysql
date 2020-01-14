@@ -8,8 +8,6 @@
 #innodb_doublewrite=ON
 # 独立表空间，默认打开
 #innodb_file_per_table = 1
-# 刷新接临页，该参数官方一直不稳定，有时候0关闭，有时候1打开，5.7版本为1，8.0.3版本之后为0，建议谨慎使用
-#innodb_flush_neighbors=1
 # LRU list的midpoint位置，默认37，如果缓冲池的数据经常需要刷新，可以适当提高默认值，如果数据不是经常刷新，可使用默认值，请通过状态参数调优
 #innodb_old_blocks_pct=37
 # LRU list如果有大量数据插入时，会将新页插入到new list中，将new list中的页移动到old list，将old list中的页移出LRU list
@@ -60,7 +58,7 @@ innodb_force_recovery=0
 #innodb_io_capacity_max=2000
 # 该值影响每秒刷新脏页的操作，开启此配置后，刷新脏页会通过判断产生重做日志的速度来判断最合适的刷新脏页的数量；而不会再根据innodb_io_capacity了
 #innodb_adaptive_flushing=ON
-# 关闭接临页刷新，默认开启
+# 刷新接临页，该参数官方一直不稳定，有时候0关闭，有时候1打开，5.7版本为1，8.0.3版本之后为0，建议谨慎使用
 innodb_flush_neighbors=0
 #-----缓冲池配置-----
 # 缓冲池大小，官方建议设置为物理内存的80%，默认128M
